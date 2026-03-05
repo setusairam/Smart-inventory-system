@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="analytics-wrapper">
+    <div class="analytics-header">
+        <h2>📊 Sales Analytics & Insights</h2>
+        <p class="text-muted">Comprehensive sales performance and trends analysis</p>
+    </div>
+    
+    <!-- Summary Statistics -->
+    <div class="stats-container">
+        <div class="stat-box">
+            <div class="stat-icon">📦</div>
+            <div class="stat-info">
+                <h5>Total Products</h5>
+                <p class="stat-value">{{ total_products }}</p>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+                <h5>Total Units Sold</h5>
+                <p class="stat-value">{{ total_units_sold }}</p>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-icon">📈</div>
+            <div class="stat-info">
+                <h5>Total Transactions</h5>
+                <p class="stat-value">{{ total_sales_count }}</p>
+            </div>
+        </div>
+        <div class="stat-box warning">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-info">
+                <h5>Low Stock Items</h5>
+                <p class="stat-value">{{ low_stock_count }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart Section -->
+    <div class="charts-section">
+        <!-- Sales by Product -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3>🛒 Sales by Product</h3>
+                <p class="chart-subtitle">Which items sell more?</p>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="productChart" height="80"></canvas>
+            </div>
+        </div>
+        
+        <!-- Daily Sales Trend -->
+        <div class="chart-container">
+            <div class="chart-header">
+                <h3>📅 Daily Sales Trend</h3>
+                <p class="chart-subtitle">Last 14 days sales pattern</p>
+            </div>
+            <div class="chart-wrapper">
+                <canvas id="trendChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Sellers Table -->
+    <div class="table-section">
+        <div class="section-header">
+            <h3>🏆 Top Performers</h3>
+            <p>Ranked by total units sold</p>
+        </div>
+        <div class="table-responsive">
+            <table class="insights-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Product Name</th>
+                        <th>Units Sold</th>
+                        <th>Current Stock</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if top_sellers %}
+                        {% for item in top_sellers %}
+                        <tr class="{% if item.stock <= item.min_threshold %}low-stock-row{% endif %}">
+                            <td><strong>#{{ loop.index }}</strong></td>
+                            <td>{{ item.name }}</td>
+                            <td><span class="badge-sold">{{ item.total_sold }}</span></td>
+                            <td>{{ item.stock }} / {{ item.min_threshold }}</td>
+                            <td>
+                                {% if item.stock <= item.min_threshold %}
+                                    <span class="status-badge danger">⚠️ Low Stock</span>
+                                {% elif item.total_sold > 15 %}
+                                    <span class="status-badge success">🔥 Best Seller</span>
+                                {% elif item.total_sold > 8 %}
+                                    <span class="status-badge info">📈 Good Seller</span>
+                                {% else %}
+                                    <span class="status-badge neutral">➖ Slow Mover</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">No sales data available</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="action-buttons">
+        <a href="{{ url_for('inventory.dashboard') }}" class="btn btn-secondary">← Back to Dashboard</a>
+        <a href="{{ url_for('inventory.recommendations') }}" class="btn btn-info">View Recommendations</a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof Chart === 'undefined') {
+            console.error('Chart.js not loaded');
+            return;
+        }
+        
+        // Product Sales Chart
+        var productCtx = document.getElementById('productChart');
+        if (productCtx) {
+            new Chart(productCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ product_names|tojson }},
+                    datasets: [{
+                        label: 'Units Sold',
+                        data: {{ product_sales|tojson }},
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        x: { beginAtZero: true },
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        // Trend Chart
+        var trendCtx = document.getElementById('trendChart');
+        if (trendCtx) {
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: {{ date_labels|tojson }},
+                    datasets: [{
+                        label: 'Daily Sales (Units)',
+                        data: {{ daily_sales|tojson }},
+                        borderColor: 'rgb(75, 192, 75)',
+                        backgroundColor: 'rgba(75, 192, 75, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 4,
+                        pointBackgroundColor: 'rgb(75, 192, 75)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .analytics-wrapper { padding: 30px 20px; background: #f8fafc; }
+    .analytics-header { text-align: center; margin-bottom: 40px; }
+    .analytics-header h2 { font-size: 32px; font-weight: 700; color: #1f2937; margin-bottom: 5px; }
+    .analytics-header p { color: #6b7280; }
+    
+    .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 40px; }
+    .stat-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #3b82f6; display: flex; align-items: center; gap: 15px; }
+    .stat-box.warning { border-left-color: #ef4444; }
+    .stat-icon { font-size: 36px; }
+    .stat-info h5 { margin: 0; color: #6b7280; font-size: 11px; text-transform: uppercase; }
+    .stat-value { margin: 5px 0 0 0; font-size: 24px; font-weight: 700; color: #1f2937; }
+    
+    .charts-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 30px; margin-bottom: 40px; }
+    .chart-container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .chart-header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+    .chart-header h3 { margin: 0 0 5px 0; color: #1f2937; font-size: 16px; }
+    .chart-subtitle { margin: 0; color: #9ca3af; font-size: 12px; }
+    .chart-wrapper { position: relative; height: 300px; }
+    
+    .table-section { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; }
+    .section-header { margin-bottom: 20px; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; }
+    .section-header h3 { margin: 0 0 5px 0; color: #1f2937; }
+    .section-header p { margin: 0; color: #9ca3af; font-size: 13px; }
+    
+    .insights-table { width: 100%; border-collapse: collapse; }
+    .insights-table th { background: #f3f4f6; padding: 12px; text-align: left; font-weight: 600; color: #374151; font-size: 12px; text-transform: uppercase; }
+    .insights-table td { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+    .insights-table tr:hover { background: #f9fafb; }
+    .insights-table tr.low-stock-row { background: #fef2f2; }
+    
+    .badge-sold { background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 4px; font-weight: 600; font-size: 12px; }
+    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .status-badge.success { background: #dcfce7; color: #166534; }
+    .status-badge.info { background: #dbeafe; color: #1e40af; }
+    .status-badge.danger { background: #fee2e2; color: #991b1b; }
+    .status-badge.neutral { background: #f3f4f6; color: #6b7280; }
+    
+    .action-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 30px; }
+    .btn { padding: 10px 20px; border-radius: 6px; font-weight: 500; text-decoration: none; border: none; cursor: pointer; }
+    .btn-secondary { background: #6b7280; color: white; }
+    .btn-secondary:hover { background: #4b5563; }
+    .btn-info { background: #3b82f6; color: white; }
+    .btn-info:hover { background: #2563eb; }
+</style>
+{% endblock %}

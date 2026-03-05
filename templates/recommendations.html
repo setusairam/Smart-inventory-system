@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Inventory Recommendations</h2>
+
+<h3>Low Stock Alerts</h3>
+<ul>
+    {% for p in low_stock %}
+        <li class="text-danger">{{ p.name }} (Stock: {{ p.stock }})</li>
+    {% endfor %}
+</ul>
+
+<h3>Reorder Suggestions</h3>
+<ul>
+    {% for s in suggestions %}
+        <li>{{ s.product.name }} &mdash; reorder {{ s.reorder_qty }} units</li>
+    {% endfor %}
+</ul>
+
+<a href="{{ url_for('inventory.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+{% endblock %}

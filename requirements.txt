@@ -1,0 +1,4 @@
+Flask==2.0.1
+# sqlite3 is part of Python standard library
+# Jinja2 is installed with Flask
+# Chart.js is included via CDN in templates

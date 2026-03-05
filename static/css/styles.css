@@ -1,0 +1,227 @@
+/* =========================
+   GLOBAL
+========================= */
+
+body{
+    background:linear-gradient(135deg,#eef2ff,#f8fafc,#e0f2fe);
+    font-family:"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-top:75px;
+    color:#1f2937;
+    min-height:100vh;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar{
+    background:linear-gradient(90deg,#0f172a,#1e293b);
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 25px rgba(0,0,0,0.25);
+}
+
+.navbar-brand{
+    font-weight:700;
+    letter-spacing:1px;
+    color:#f9fafb !important;
+}
+
+.nav-link{
+    color:#cbd5f5 !important;
+    font-weight:500;
+    transition:.3s;
+}
+
+.nav-link:hover{
+    color:#60a5fa !important;
+}
+
+/* =========================
+   TITLE
+========================= */
+
+h2{
+    font-weight:700;
+    margin-bottom:30px;
+}
+
+/* =========================
+   DASHBOARD CARDS
+========================= */
+
+.dashboard-card{
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(12px);
+    border-radius:16px;
+    padding:25px;
+    margin-bottom:25px;
+    border:1px solid rgba(255,255,255,0.4);
+    box-shadow:0 15px 35px rgba(0,0,0,0.1);
+    transition:all .35s ease;
+}
+
+.dashboard-card:hover{
+    transform:translateY(-6px) scale(1.01);
+    box-shadow:0 20px 45px rgba(0,0,0,0.18);
+}
+
+/* =========================
+   TABLES
+========================= */
+
+.table{
+    border-radius:12px;
+    overflow:hidden;
+    background:white;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+.table thead{
+    background:linear-gradient(90deg,#3b82f6,#6366f1);
+    color:white;
+}
+
+.table thead th{
+    border:none;
+    font-weight:600;
+}
+
+.table tbody tr{
+    transition:.25s;
+}
+
+.table tbody tr:hover{
+    background:#f1f5ff;
+    transform:scale(1.002);
+}
+
+.table-danger{
+    background:#ffe4e6 !important;
+    color:#7f1d1d;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.btn{
+    border-radius:8px;
+    font-weight:600;
+    padding:7px 16px;
+    transition:.3s;
+    border:none;
+}
+
+/* primary */
+
+.btn-primary{
+    background:linear-gradient(135deg,#3b82f6,#6366f1);
+}
+
+.btn-primary:hover{
+    transform:translateY(-1px);
+    box-shadow:0 8px 18px rgba(59,130,246,0.35);
+}
+
+/* success */
+
+.btn-success{
+    background:linear-gradient(135deg,#34d399,#10b981);
+}
+
+.btn-success:hover{
+    box-shadow:0 8px 18px rgba(16,185,129,0.35);
+}
+
+/* danger */
+
+.btn-danger{
+    background:linear-gradient(135deg,#f87171,#ef4444);
+}
+
+.btn-danger:hover{
+    box-shadow:0 8px 18px rgba(239,68,68,0.35);
+}
+
+/* =========================
+   ALERT TEXT
+========================= */
+
+.text-danger{
+    font-weight:700;
+}
+
+/* =========================
+   LISTS
+========================= */
+
+ul{
+    padding-left:18px;
+}
+
+ul li{
+    margin-bottom:6px;
+}
+
+/* =========================
+   CHART
+========================= */
+
+canvas{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* =========================
+   FORMS
+========================= */
+
+form{
+    background:rgba(255,255,255,0.8);
+    backdrop-filter:blur(10px);
+    padding:28px;
+    border-radius:16px;
+    box-shadow:0 15px 35px rgba(0,0,0,0.1);
+}
+
+.form-control{
+    border-radius:8px;
+    border:1px solid #d1d5db;
+    padding:10px;
+    transition:.25s;
+}
+
+.form-control:focus{
+    border-color:#6366f1;
+    box-shadow:0 0 0 0.2rem rgba(99,102,241,0.2);
+}
+
+/* =========================
+   SCROLLBAR
+========================= */
+
+::-webkit-scrollbar{
+    width:8px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:linear-gradient(#6366f1,#3b82f6);
+    border-radius:6px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+    background:#1d4ed8;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer{
+    margin-top:40px;
+    text-align:center;
+    color:#6b7280;
+    font-size:14px;
+}

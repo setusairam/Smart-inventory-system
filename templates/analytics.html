@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="analytics-wrapper">
+    <div class="analytics-header">
+        <h2>📊 Sales Analytics & Insights</h2>
+        <p class="text-muted">Comprehensive sales performance and trends analysis</p>
+    </div>
+    
+    <div class="analytics-grid">
+        <!-- Sales by Product -->
+        <div class="chart-card">
+            <h3>Sales by Product (Total Units Sold)</h3>
+            <canvas id="salesByProductChart"></canvas>
+        </div>
+        
+        <!-- Sales Over Time -->
+        <div class="chart-card">
+            <h3>Sales Trend Over Time</h3>
+            <canvas id="salesTrendChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Top Sellers Table -->
+    <div class="analytics-table">
+        <h3>📈 Top Sellers & Performance</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Product</th>
+                    <th>Total Units Sold</th>
+                    <th>Current Stock</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in top_sellers %}
+                <tr>
+                    <td><strong>{{ loop.index }}</strong></td>
+                    <td>{{ item.name }}</td>
+                    <td><span class="badge badge-primary">{{ item.total_sold }}</span></td>
+                    <td>{{ item.stock }}</td>
+                    <td>
+                        {% if item.stock <= item.min_threshold %}
+                            <span class="badge badge-danger">Low Stock ⚠️</span>
+                        {% elif item.total_sold > 10 %}
+                            <span class="badge badge-success">Best Seller 🔥</span>
+                        {% else %}
+                            <span class="badge badge-info">Normal</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Summary Stats -->
+    <div class="summary-cards">
+        <div class="stat-card">
+            <h4>Total Units Sold</h4>
+            <p class="stat-number">{{ total_units_sold }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Unique Products</h4>
+            <p class="stat-number">{{ total_products }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Total Sales Records</h4>
+            <p class="stat-number">{{ total_sales_count }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>Low Stock Items</h4>
+            <p class="stat-number" style="color: #ef4444;">{{ low_stock_count }}</p>
+        </div>
+    </div>
+    
+    <a href="{{ url_for('inventory.dashboard') }}" class="btn btn-secondary mt-4">← Back to Dashboard</a>
+</div>
+
+<script>
+    // Sales by Product Chart
+    var ctx1 = document.getElementById('salesByProductChart').getContext('2d');
+    var chart1 = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: {{ product_names|tojson }},
+            datasets: [{
+                label: 'Units Sold',
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2,
+                data: {{ product_sales|tojson }},
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Units Sold'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Sales Trend Over Time Chart
+    var ctx2 = document.getElementById('salesTrendChart').getContext('2d');
+    var chart2 = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: {{ date_labels|tojson }},
+            datasets: [{
+                label: 'Daily Sales',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 3,
+                data: {{ daily_sales|tojson }},
+                tension: 0.4,
+                fill: true,
+                pointRadius: 5,
+                pointBackgroundColor: 'rgba(75, 192, 192, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+
+<style>
+    .analytics-container {
+        padding: 20px;
+    }
+    
+    .analytics-title {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #1f2937;
+        font-size: 28px;
+        font-weight: 700;
+    }
+    
+    .analytics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .chart-card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #2563eb;
+    }
+    
+    .chart-card h3 {
+        margin-bottom: 15px;
+        color: #1f2937;
+        font-weight: 600;
+    }
+    
+    .analytics-table {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
+    
+    .analytics-table h3 {
+        margin-bottom: 20px;
+        color: #1f2937;
+        font-weight: 600;
+    }
+    
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table thead {
+        background: #f3f4f6;
+    }
+    
+    .badge {
+        padding: 5px 10px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .summary-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .stat-card h4 {
+        margin-bottom: 10px;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    
+    .stat-number {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+    }
+</style>
+{% endblock %}

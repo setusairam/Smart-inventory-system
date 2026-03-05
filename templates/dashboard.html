@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Dashboard <a href="{{ url_for('inventory.recommendations') }}" class="btn btn-sm btn-info">View Recommendations</a></h2>
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Stock</th>
+        <th>Min Threshold</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for p in products %}
+        <tr class="{% if p.stock <= p.min_threshold %}table-danger{% endif %}">
+            <td>{{ p.id }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.stock }}</td>
+            <td>{{ p.min_threshold }}</td>
+            <td>
+                <a href="{{ url_for('inventory.edit_product', product_id=p.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                <a href="{{ url_for('inventory.delete_product', product_id=p.id) }}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+<h3>Sales Trends</h3>
+<canvas id="salesChart"></canvas>
+<script>
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels|tojson }},
+            datasets: [{
+                label: 'Sales Quantity',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                data: {{ values|tojson }}
+            }]
+        },
+        options: {}
+    });
+</script>
+{% endblock %}
