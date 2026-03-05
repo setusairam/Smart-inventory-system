@@ -261,4 +261,3 @@ This project is free to use for educational and commercial purposes.
 **Created with ❤️ for efficient inventory management**
 
 Need help? Check the inline code comments or run tests to verify functionality.
-# Smart-inventory-system
